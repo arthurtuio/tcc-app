@@ -549,7 +549,7 @@ def create_df_and_texts():
 
     st.sidebar.header('User Input Features')
 
-    enriched_csv = "enriched_result_05_set.csv"
+    enriched_csv = "/home/arthur/PycharmProjects/TCC/CSVs/enriched_csvs/enriched_result_05_set.csv"
 
     return pd.read_csv(enriched_csv), analysis_style
 
@@ -582,26 +582,29 @@ def create_sidebars(df, analysis_style):
 
 def filter_showed_data(df, analysis_style):
     # Filtering data
-    if analysis_style == "Unidade consumidora de um Campus":
-        campus_column = "Campus_Unique_Name"
-    elif analysis_style == "Campus inteiro":
-        campus_column = "Campus_Name"
+    try:
+        if analysis_style == "Unidade consumidora de um Campus":
+            campus_column = "Campus_Unique_Name"
+        elif analysis_style == "Campus inteiro":
+            campus_column = "Campus_Name"
 
-    if not selected_campus and selected_grupo_tarifario:
-        df_input_filtered = df[
-            (df.Grupo_Tarifario.isin(selected_grupo_tarifario)) &
-            (df.MM_YY_ref.isin(selected_date))
-            ]
-    elif selected_campus:
-        df_input_filtered = df[
-            (df[campus_column].isin(selected_campus)) &
-            (df.MM_YY_ref.isin(selected_date))
-            ]
+        if not selected_campus and selected_grupo_tarifario:
+            df_input_filtered = df[
+                (df.Grupo_Tarifario.isin(selected_grupo_tarifario)) &
+                (df.MM_YY_ref.isin(selected_date))
+                ]
+        elif selected_campus:
+            df_input_filtered = df[
+                (df[campus_column].isin(selected_campus)) &
+                (df.MM_YY_ref.isin(selected_date))
+                ]
 
-    else:
+        return df_input_filtered
+
+    except:
         st.markdown("**Para iniciar, por favor, escolha na User Input Features um campus ou um grupo tarifário.**")
 
-    return df_input_filtered
+
 
 
 def create_output_table(df):
@@ -611,6 +614,7 @@ def create_output_table(df):
     st.write(
         'Data Dimension: ' + str(df.shape[0]) + ' rows and ' + str(df.shape[1]) + ' columns.')
     st.dataframe(df)
+
 
 
 # https://discuss.streamlit.io/t/how-to-download-file-in-streamlit/1806
@@ -900,25 +904,27 @@ selected_grupo_tarifario, selected_campus, selected_date = create_sidebars(df_fa
 
 df_input_filtered = filter_showed_data(df_fatura, analysis_style)
 
-create_output_table(df_input_filtered)
+try:
+    create_output_table(df_input_filtered)
 
-st.markdown(filedownload(df_input_filtered), unsafe_allow_html=True)
+    st.markdown(filedownload(df_input_filtered), unsafe_allow_html=True)
 
-create_header_for_individual_plots()
+    create_header_for_individual_plots()
 
-create_plots_based_on_unique_campus_or_all_campus(
-    df_input_filtered, selected_campus, analysis_style, selected_grupo_tarifario
-)
+    create_plots_based_on_unique_campus_or_all_campus(
+        df_input_filtered, selected_campus, analysis_style, selected_grupo_tarifario
+    )
 
-create_header_for_algorythm_analysis()
+    create_header_for_algorythm_analysis()
 
-if st.checkbox("Análise de Demanda", key="dem_analysis"):
-    analyse_demanda(df_input_filtered)
+    if st.checkbox("Análise de Demanda", key="dem_analysis"):
+        analyse_demanda(df_input_filtered)
 
-if st.checkbox("Análise Comparativa dos anos do consumo"):
-    fig = comparative_year_analysis(df_input_filtered, selected_grupo_tarifario)
-    st.plotly_chart(fig, use_container_width=True)
+    if st.checkbox("Análise Comparativa dos anos do consumo"):
+        fig = comparative_year_analysis(df_input_filtered, selected_grupo_tarifario)
+        st.plotly_chart(fig, use_container_width=True)
 
+    create_header_for_prediction()
 
-
-create_header_for_prediction()
+except:
+    st.write("**A tabela só aparecerá quando você fizer as escolhas dos dados.**")
