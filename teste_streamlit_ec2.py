@@ -549,7 +549,7 @@ def create_df_and_texts():
 
     st.sidebar.header('User Input Features')
 
-    enriched_csv = "enriched_result_05_set.csv"
+    enriched_csv = "enriched_randomized_csv.csv"
 
     return pd.read_csv(enriched_csv), analysis_style
 
