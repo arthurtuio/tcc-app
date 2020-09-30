@@ -540,6 +540,8 @@ def create_df_and_texts():
         uma data que você gostaria de visualizar. 
 
         Observação: Note que você pode escolher mais de um campus e data.
+
+	**Os dados usados nessa análise são todos aleatórios!**
         """)
 
     analysis_style = st.selectbox(
